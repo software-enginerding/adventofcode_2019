@@ -1,10 +1,11 @@
 class IntcodeComputer:
-    def __init__(self, data: str, phase: int = None ):
+    def __init__(self, data: str, phase: int = None):
         # split string on commas, convert it to integers, store them in a list
         self.intcode = { i: v for i, v in enumerate(list(map(lambda x: int(x), data.split(","))))}
         self.remaining_inputs = [phase] if phase is not None else []
         self.start_index = 0
         self.relative_base = 0
+        self.is_halted = False
 
 
     def run_program(self, inputs):
@@ -78,6 +79,8 @@ class IntcodeComputer:
                     self.intcode[destination] = 0
                 self.start_index += 4
             elif opcode == 99:
+                print("halting")
+                self.is_halted = True
                 return None
             elif opcode == 9:
                 self.relative_base += self.get_value(opcode_buffer, 0)
@@ -86,7 +89,7 @@ class IntcodeComputer:
                 break
 
     def get_value(self, opcode_buffer, parameter_index):
-        return self.intcode[self.get_value_index(opcode_buffer, parameter_index)]
+        return self.intcode.get(self.get_value_index(opcode_buffer, parameter_index), 0)
 
     def get_value_index(self, opcode_buffer, parameter_index):
         if parameter_index == 0:
